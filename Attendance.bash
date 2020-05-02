@@ -17,7 +17,7 @@
 #   | |         along with this program.  If not, see <http://www.gnu.org/licenses/>.               | |
 #   | |                                                                                             | |
 #   | \_____________________________________________________________________________________________/ |
-#   |* ________________________________________Attenance_4/25/2020__________________________________ *|
+#   |* ________________________________________Attenance_5/2/2020___________________________________ *|
 #   | /                                                                                             \ |
 #   | |                                    Written by: Joshua Hoffman                               | |
 #   | |                                 joshua.hoffman.ray@protonmail.com                           | |
@@ -28,30 +28,20 @@
 
 Attenance () {
 
-declare -A List
+Call[0]=Name    Roll[0]="$0"
+Call[1]=Path    Roll[1]="$(dirname "$(realpath $0)")"                        
+Call[2]=Version Roll[2]="$(uname -n)"                                         
+Call[3]=User    Roll[3]="${USER:=whoami}"                                    
+Call[4]=Date    Roll[4]="$(date +'%m_%d_%y')"                                
+Call[5]=Time    Roll[5]="$(date +'%H-%M-%S')"                                
+Call[6]=Uptime  Roll[6]="$(awk -v OFMT=%.2f '{print $2/3600}' /proc/uptime)" 
+Call[7]=Uuid    Roll[7]="$(cat /proc/sys/kernel/random/uuid)"
+Call[8]=Euid    Roll[8]="$(echo $EUID)"
+Call[9]=Cores   Roll[9]="$(awk 'NR==11 {print $3}' /proc/cpuinfo)"
 
-Roll[0]=Ferris   Call[0]=Test
-Roll[1]=Path     Call[1]="$(dirname "$(realpath $0)")"
-Roll[2]=Version  Call[2]="$(uname -n)"
-Roll[3]=User     Call[3]="${USER:=whoami}"
-Roll[4]=Date     Call[4]="$(date +'%m_%d_%y')"
-Roll[5]=Time     Call[5]="$(date +'%H-%M-%S')"
-Roll[6]=Uptime   Call[6]="$(awk -v OFMT=%.2f '{print $2/3600}' /proc/uptime)"
-Roll[7]=Random   Call[7]="$(cat /proc/sys/kernel/random/uuid)"
-
-	for Name in ${!Call[@]}; do
-	eval export Says="\${$Name}"
-	eval export ${Roll[$Name]}=\${Says:=${Call[$Name]}}
-	eval List[${Roll[$Name]}]=\$${Roll[$Name]}
-	done
-
-	if [[ ${Attenance_1:=0} = 0 ]]; then
-
-		for Here in ${!List[@]}; do
-		echo -e "Position: $((A++))\nAssigned: ${Here}\nVariable: ${List[$Here]}\n"
-		done
-
-	fi
+eval Seat[$((A++))]=\${0..9}
+eval declare -Ag List[\${Call[{0..9}]}]=\${Roll[$((B++))]}
+eval declare -Ag Name[\${Call[{0..9}]}]=\${Seat[$((C++))]:=\${Roll[$((C-1))]}}
 
 }
 
